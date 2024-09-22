@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五更常旺說好話讀好書排球團抽籤分組程式</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 800px;
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
+        }
+        input {
+            margin: 5px 0;
+            padding: 5px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            text-align: center;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .groups-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 1200px;
+        }
+        .group {
+            margin: 10px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 18%;
+            min-width: 150px;
+            box-sizing: border-box;
+        }
+        .group h4 {
+            margin-top: 0;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+        @media (max-width: 768px) {
+            .groups-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .group {
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>五更常旺說好話讀好書排球團</h1>
+    <h1>抽籤分組程式</h1>
+    <div class="container">
+        <div class="column">
+            <h2>女生</h2>
+            <input type="text" class="female" value="依芸">
+            <input type="text" class="female" value="小育">
+            <input type="text" class="female" value="阿禪">
+            <input type="text" class="female" value="廖禎">
+            <input type="text" class="female" value="京盈">
+            <input type="text" class="female" value="小美">
+            <input type="text" class="female" value="Amber">
+            <input type="text" class="female" value="蕭魚">
+            <input type="text" class="female" placeholder="女生姓名9">
+            <input type="text" class="female" placeholder="女生姓名10">
+            <input type="text" class="female" placeholder="女生姓名11">
+            <input type="text" class="female" placeholder="女生姓名12">
+            <input type="text" class="female" placeholder="女生姓名13">
+            <input type="text" class="female" placeholder="女生姓名14">
+            <input type="text" class="female" placeholder="女生姓名15">
+        </div>
+        <div class="column">
+            <h2>男生</h2>
+            <input type="text" class="male" value="品客">
+            <input type="text" class="male" value="J翰">
+            <input type="text" class="male" value="銀狼">
+            <input type="text" class="male" value="瑪莉">
+            <input type="text" class="male" value="蚊子">
+            <input type="text" class="male" value="子森">
+            <input type="text" class="male" value="17">
+            <input type="text" class="male" placeholder="男生姓名8">
+            <input type="text" class="male" placeholder="男生姓名9">
+            <input type="text" class="male" placeholder="男生姓名10">
+            <input type="text" class="male" placeholder="男生姓名11">
+            <input type="text" class="male" placeholder="男生姓名12">
+            <input type="text" class="male" placeholder="男生姓名13">
+            <input type="text" class="male" placeholder="男生姓名14">
+            <input type="text" class="male" placeholder="男生姓名15">
+        </div>
+    </div>
+    <button onclick="startLottery()">開始抽籤分組</button>
+    <div id="result"></div>
+
+    <script>
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startLottery() {
+            const females = Array.from(document.querySelectorAll('.female'))
+                .map(input => input.value.trim())
+                .filter(name => name !== '');
+            const males = Array.from(document.querySelectorAll('.male'))
+                .map(input => input.value.trim())
+                .filter(name => name !== '');
+
+            if (females.length === 0 && males.length === 0) {
+                alert('請至少輸入一個名字！');
+                return;
+            }
+
+            const groups = {
+                A: [], B: [], C: [], D: [], E: []
+            };
+            const groupNames = Object.keys(groups);
+
+            // 第一輪：女生抽籤
+            shuffle(females);
+            for (let i = 0; i < Math.min(5, females.length); i++) {
+                groups[groupNames[i]].push(females[i]);
+            }
+
+            // 第二輪：男生抽籤
+            shuffle(males);
+            for (let i = 0; i < Math.min(5, males.length); i++) {
+                groups[groupNames[i]].push(males[i]);
+            }
+
+            // 第三輪：剩餘人員隨機分配
+            const remainingFemales = females.slice(5);
+            const remainingMales = males.slice(5);
+            const remaining = shuffle([...remainingFemales, ...remainingMales]);
+
+            let groupIndex = 0;
+            for (const person of remaining) {
+                groups[groupNames[groupIndex]].push(person);
+                groupIndex = (groupIndex + 1) % 5;
+            }
+
+            // 顯示結果
+            let resultHTML = '<h3>抽籤結果：</h3><div class="groups-container">';
+            for (const [groupName, members] of Object.entries(groups)) {
+                resultHTML += `
+                    <div class="group">
+                        <h4>第${groupName}組</h4>
+                        <p>${members.join('<br>')}</p>
+                    </div>
+                `;
+            }
+            resultHTML += '</div>';
+
+            document.getElementById('result').innerHTML = resultHTML;
+        }
+    </script>
+</body>
+</html>
